@@ -7,418 +7,136 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --red:    #E3131B;
-      --red-dark: #a50d14;
-      --silver: #C8C9C7;
-      --dark:   #1A1A1A;
-      --mid:    #2C2C2C;
-      --light:  #F2F2F0;
-      --gold:   #F5A623;
-      --express: #E3131B;
-      --limited: #F5A623;
-      --local:   #4A90D9;
+      --red:         #E3131B;
+      --red-dark:    #a50d14;
+      --silver:      #C8C9C7;
+      --dark:        #111214;
+      --mid:         #1e2025;
+      --card:        #252830;
+      --border:      #2e3138;
+      --light:       #F2F2F0;
+      --gold:        #F5A623;
+      --green:       #4ade80;
       --baby-bullet: #8B5CF6;
+      --express:     #E3131B;
+      --limited:     #F5A623;
+      --local:       #4A90D9;
     }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--dark); color:var(--light); font-family:'Barlow',sans-serif; min-height:100vh; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    header { background:var(--red); position:sticky; top:0; z-index:100; box-shadow:0 2px 20px rgba(0,0,0,0.5); }
+    .header-stripe { height:5px; background:repeating-linear-gradient(90deg,#111 0px,#111 24px,rgba(255,255,255,0.25) 24px,rgba(255,255,255,0.25) 48px); }
+    .header-inner { max-width:1000px; margin:0 auto; display:flex; align-items:center; gap:16px; padding:14px 24px; }
+    .logo { width:46px; height:46px; flex-shrink:0; background:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(0,0,0,0.3); }
+    .logo svg { width:30px; height:30px; }
+    .header-title h1 { font-family:'Barlow Condensed',sans-serif; font-size:1.9rem; font-weight:900; letter-spacing:0.05em; text-transform:uppercase; line-height:1; }
+    .header-title p { font-size:0.72rem; opacity:0.8; font-weight:300; letter-spacing:0.1em; text-transform:uppercase; }
+    .header-clock { margin-left:auto; text-align:right; }
+    .clock-time { font-family:'Barlow Condensed',sans-serif; font-size:1.6rem; font-weight:700; line-height:1; letter-spacing:0.04em; }
+    .clock-status { display:flex; align-items:center; justify-content:flex-end; gap:6px; font-size:0.65rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; opacity:0.85; margin-top:2px; }
+    .status-dot { width:6px; height:6px; border-radius:50%; background:var(--silver); }
+    .status-dot.live    { background:var(--green); animation:pulse 1.4s infinite; }
+    .status-dot.loading { background:var(--gold); animation:blink 0.6s infinite; }
+    .status-dot.error   { background:var(--red); }
+    @keyframes blink  { 50%{opacity:0.2} }
+    @keyframes pulse  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
 
-    body {
-      background: var(--dark);
-      color: var(--light);
-      font-family: 'Barlow', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    .page { max-width:1000px; margin:0 auto; padding:20px 24px 40px; }
 
-    /* ── Header ── */
-    header {
-      background: var(--red);
-      padding: 0;
-      position: relative;
-      overflow: hidden;
-    }
-    .header-stripe {
-      height: 6px;
-      background: repeating-linear-gradient(90deg, var(--dark) 0px, var(--dark) 30px, var(--silver) 30px, var(--silver) 60px);
-    }
-    .header-content {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      padding: 18px 32px 14px;
-    }
-    .logo-circle {
-      width: 54px; height: 54px;
-      background: white;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-    }
-    .logo-circle svg { width: 36px; height: 36px; }
-    .header-text h1 {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 2.2rem;
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      line-height: 1;
-      text-transform: uppercase;
-    }
-    .header-text p {
-      font-size: 0.85rem;
-      opacity: 0.85;
-      font-weight: 300;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .live-badge {
-      margin-left: auto;
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(0,0,0,0.25);
-      border-radius: 20px;
-      padding: 6px 14px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-    .pulse-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #4ade80;
-      animation: pulse 1.4s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.8); }
-    }
+    .controls { display:flex; align-items:center; gap:12px; background:var(--mid); border:1px solid var(--border); border-radius:14px; padding:14px 20px; margin-bottom:20px; flex-wrap:wrap; }
+    .ctrl-group { flex:1; min-width:140px; }
+    .ctrl-group + .ctrl-group { border-left:1px solid var(--border); padding-left:16px; }
+    .ctrl-label { font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:#555; margin-bottom:3px; }
+    .ctrl-value { font-family:'Barlow Condensed',sans-serif; font-size:1rem; font-weight:600; color:white; }
 
-    /* ── Main layout ── */
-    .container { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
+    .btn { display:inline-flex; align-items:center; gap:7px; padding:10px 18px; border-radius:8px; border:none; font-family:'Barlow Condensed',sans-serif; font-size:0.88rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+    .btn-primary { background:var(--red); color:white; }
+    .btn-primary:hover { background:var(--red-dark); transform:translateY(-1px); }
+    .btn-ghost { background:transparent; color:var(--silver); border:1px solid var(--border); }
+    .btn-ghost:hover { border-color:#555; color:white; }
 
-    /* ── API Config ── */
-    .config-card {
-      background: var(--mid);
-      border: 1px solid #3a3a3a;
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-end;
-      flex-wrap: wrap;
-    }
-    .config-card label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--silver);
-      display: block;
-      margin-bottom: 6px;
-    }
-    .config-card input {
-      background: #111;
-      border: 1px solid #444;
-      border-radius: 8px;
-      color: white;
-      padding: 10px 14px;
-      font-size: 0.9rem;
-      font-family: 'Barlow', sans-serif;
-      width: 320px;
-      max-width: 100%;
-    }
-    .config-card input:focus { outline: none; border-color: var(--red); }
+    .stop-line-wrap { background:var(--mid); border:1px solid var(--border); border-radius:14px; padding:18px 24px; margin-bottom:20px; overflow-x:auto; }
+    .stop-line-label { font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:#444; margin-bottom:16px; }
+    .stop-track { display:flex; align-items:flex-start; min-width:max-content; padding:4px 0 0; }
+    .snode { display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .snode-dot { width:9px; height:9px; border-radius:50%; background:#2a2a2a; border:2px solid #383838; margin-top:3px; }
+    .snode.is-you .snode-dot { width:14px; height:14px; margin-top:0; background:var(--red); border:3px solid white; box-shadow:0 0 0 3px rgba(227,19,27,0.35); }
+    .snode-name { font-size:0.6rem; color:#444; text-align:center; max-width:52px; line-height:1.3; }
+    .snode.is-you .snode-name { color:var(--red); font-weight:700; }
+    .sseg { height:2px; min-width:22px; flex:1; background:#252525; margin-top:7px; align-self:flex-start; }
+    .ellipsis { font-size:0.65rem; color:#333; padding:0 8px; margin-top:5px; white-space:nowrap; align-self:flex-start; }
 
-    /* ── Location Card ── */
-    .location-card {
-      background: var(--mid);
-      border: 1px solid #3a3a3a;
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .location-icon {
-      width: 44px; height: 44px;
-      background: var(--red);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      font-size: 1.3rem;
-    }
-    .location-info { flex: 1; min-width: 180px; }
-    .location-info h3 {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 2px;
-    }
-    .location-info p { font-size: 0.82rem; color: var(--silver); }
-    .location-info p span { color: white; font-weight: 500; }
+    .legend { display:flex; gap:20px; flex-wrap:wrap; margin-bottom:16px; }
+    .legend-item { display:flex; align-items:center; gap:7px; font-size:0.68rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#555; }
+    .legend-bar { width:16px; height:3px; border-radius:2px; }
 
-    /* ── Buttons ── */
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 11px 22px;
-      border-radius: 8px;
-      border: none;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .btn-primary { background: var(--red); color: white; }
-    .btn-primary:hover { background: var(--red-dark); transform: translateY(-1px); }
-    .btn-secondary { background: #3a3a3a; color: white; }
-    .btn-secondary:hover { background: #4a4a4a; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+    .board-section-title { font-family:'Barlow Condensed',sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.16em; color:#444; display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .board-section-title::after { content:''; flex:1; height:1px; background:#222; }
 
-    /* ── Status message ── */
-    .status-msg {
-      text-align: center;
-      padding: 18px;
-      color: var(--silver);
-      font-size: 0.9rem;
-      letter-spacing: 0.03em;
-    }
+    .board-col-heads { display:grid; grid-template-columns:72px 1fr 50px 120px 90px 80px; gap:12px; padding:0 20px 6px; }
+    .board-col-heads span { font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:#3a3a3a; }
+    .board-col-heads span:last-child { text-align:right; }
 
-    /* ── Train list ── */
-    .section-header {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--silver);
-      margin-bottom: 12px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .section-header::after {
-      content: ''; flex: 1; height: 1px; background: #3a3a3a;
-    }
+    .board { display:flex; flex-direction:column; gap:5px; margin-bottom:24px; }
+    .trow { display:grid; grid-template-columns:72px 1fr 50px 120px 90px 80px; gap:12px; align-items:center; background:var(--card); border:1px solid var(--border); border-radius:11px; padding:13px 20px; position:relative; overflow:hidden; transition:border-color 0.2s, transform 0.15s; }
+    .trow:hover { border-color:#3c3c3c; transform:translateX(3px); }
+    .trow::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:3px 0 0 3px; }
+    .trow.baby-bullet::before { background:var(--baby-bullet); }
+    .trow.express::before     { background:var(--express); }
+    .trow.limited::before     { background:var(--limited); }
+    .trow.local::before       { background:var(--local); }
+    .trow.imminent    { border-color:rgba(245,166,35,0.35); background:linear-gradient(90deg,rgba(245,166,35,0.05) 0%,var(--card) 35%); }
+    .trow.arriving-now{ border-color:rgba(74,222,128,0.35); background:linear-gradient(90deg,rgba(74,222,128,0.07) 0%,var(--card) 35%); }
 
-    .train-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+    .t-num { font-family:'Barlow Condensed',sans-serif; font-size:1.45rem; font-weight:900; line-height:1; }
+    .trow.baby-bullet .t-num { color:var(--baby-bullet); }
+    .trow.express     .t-num { color:#ff6b6b; }
+    .trow.limited     .t-num { color:var(--limited); }
+    .trow.local       .t-num { color:var(--local); }
 
-    .train-card {
-      background: var(--mid);
-      border: 1px solid #3a3a3a;
-      border-radius: 12px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      transition: all 0.2s;
-      cursor: default;
-      position: relative;
-      overflow: hidden;
-    }
-    .train-card::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 4px;
-    }
-    .train-card.express::before { background: var(--express); }
-    .train-card.limited::before { background: var(--limited); }
-    .train-card.local::before   { background: var(--local); }
-    .train-card.baby-bullet::before { background: var(--baby-bullet); }
-    .train-card:hover { border-color: #555; transform: translateX(2px); }
+    .t-dest-main { font-size:0.92rem; font-weight:600; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .t-dest-sub  { font-size:0.7rem; color:#555; margin-top:2px; }
 
-    .train-number-badge {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 900;
-      min-width: 66px;
-      text-align: center;
-      line-height: 1;
-    }
-    .train-card.express .train-number-badge { color: var(--express); }
-    .train-card.limited .train-number-badge { color: var(--limited); }
-    .train-card.local   .train-number-badge { color: var(--local); }
-    .train-card.baby-bullet .train-number-badge { color: var(--baby-bullet); }
+    .dir-badge { font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; font-weight:700; padding:2px 7px; border-radius:4px; text-transform:uppercase; letter-spacing:0.06em; width:fit-content; }
+    .dir-nb { background:rgba(74,222,128,0.15); color:#86efac; border:1px solid rgba(74,222,128,0.3); }
+    .dir-sb { background:rgba(74,144,217,0.15); color:#93c5fd; border:1px solid rgba(74,144,217,0.3); }
 
-    .train-details { flex: 1; }
-    .train-type-row {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
-    }
-    .type-pill {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 2px 9px;
-      border-radius: 4px;
-    }
-    .train-card.express .type-pill { background: var(--express); color: white; }
-    .train-card.limited .type-pill { background: var(--limited); color: #111; }
-    .train-card.local   .type-pill { background: var(--local); color: white; }
-    .train-card.baby-bullet .type-pill { background: var(--baby-bullet); color: white; }
+    .t-type { display:flex; align-items:center; }
+    .type-pill { font-family:'Barlow Condensed',sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; padding:3px 10px; border-radius:20px; white-space:nowrap; }
+    .trow.baby-bullet .type-pill { background:rgba(139,92,246,0.15); color:#c4b5fd; border:1px solid rgba(139,92,246,0.35); }
+    .trow.express     .type-pill { background:rgba(227,19,27,0.15);  color:#fca5a5; border:1px solid rgba(227,19,27,0.35); }
+    .trow.limited     .type-pill { background:rgba(245,166,35,0.15); color:#fcd34d; border:1px solid rgba(245,166,35,0.35); }
+    .trow.local       .type-pill { background:rgba(74,144,217,0.15); color:#93c5fd; border:1px solid rgba(74,144,217,0.35); }
 
-    .train-route {
-      font-size: 0.9rem;
-      color: var(--light);
-      font-weight: 500;
-    }
-    .train-meta {
-      font-size: 0.78rem;
-      color: var(--silver);
-      margin-top: 2px;
-    }
+    .t-time { font-family:'Barlow Condensed',sans-serif; font-size:0.95rem; font-weight:600; color:#555; }
+    .t-countdown { text-align:right; }
+    .countdown-num { font-family:'Barlow Condensed',sans-serif; font-size:1.45rem; font-weight:900; line-height:1; color:#444; }
+    .countdown-num.soon { color:var(--gold); }
+    .countdown-num.now  { color:var(--green); }
+    .countdown-unit { font-size:0.6rem; color:#444; text-transform:uppercase; letter-spacing:0.08em; }
 
-    .train-timing { text-align: right; flex-shrink: 0; }
-    .arriving-in {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      line-height: 1;
-    }
-    .arriving-in.soon { color: var(--gold); }
-    .arriving-in.now  { color: #4ade80; animation: pulse 1s infinite; }
-    .arriving-label {
-      font-size: 0.7rem;
-      color: var(--silver);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-    }
-    .train-distance {
-      font-size: 0.75rem;
-      color: var(--silver);
-      margin-top: 3px;
-    }
+    .empty-state { text-align:center; padding:52px 20px; color:#333; }
+    .empty-state .e-icon { font-size:2.4rem; margin-bottom:14px; }
+    .empty-state h3 { font-family:'Barlow Condensed',sans-serif; font-size:1rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#444; margin-bottom:6px; }
+    .empty-state p { font-size:0.8rem; line-height:1.6; }
+    .empty-state strong { color:#666; }
 
-    /* ── Legend ── */
-    .legend {
-      display: flex; gap: 18px; flex-wrap: wrap;
-      background: var(--mid);
-      border: 1px solid #3a3a3a;
-      border-radius: 10px;
-      padding: 14px 20px;
-      margin-bottom: 20px;
-    }
-    .legend-item {
-      display: flex; align-items: center; gap: 7px;
-      font-size: 0.78rem;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+    .error-bar { background:rgba(227,19,27,0.1); border:1px solid rgba(227,19,27,0.3); border-radius:10px; padding:11px 16px; font-size:0.8rem; color:#fca5a5; margin-bottom:16px; }
+    .loading-row { display:flex; align-items:center; justify-content:center; gap:10px; padding:40px; color:#444; font-size:0.82rem; }
+    .spinner { display:inline-block; width:16px; height:16px; border:2px solid #2a2a2a; border-top-color:var(--red); border-radius:50%; animation:spin 0.7s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
 
-    /* ── Map placeholder ── */
-    .map-area {
-      background: #111;
-      border: 1px solid #3a3a3a;
-      border-radius: 12px;
-      height: 220px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .map-track {
-      position: absolute;
-      left: 0; right: 0;
-      top: 50%;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, #3a3a3a 10%, #3a3a3a 90%, transparent);
-      transform: translateY(-50%);
-    }
-    .map-you {
-      position: relative;
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      z-index: 2;
-    }
-    .map-you-dot {
-      width: 16px; height: 16px;
-      background: var(--red);
-      border-radius: 50%;
-      border: 3px solid white;
-      box-shadow: 0 0 0 4px rgba(227,19,27,0.3);
-      animation: ripple 2s infinite;
-    }
-    @keyframes ripple {
-      0% { box-shadow: 0 0 0 0px rgba(227,19,27,0.5); }
-      100% { box-shadow: 0 0 0 14px rgba(227,19,27,0); }
-    }
-    .map-you-label {
-      font-size: 0.7rem; color: var(--silver); text-transform: uppercase; letter-spacing: 0.08em;
-    }
-    .map-train-icon {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.4rem;
-      transition: left 2s linear;
-      z-index: 2;
-    }
+    .footer { text-align:center; padding:16px 0 0; color:#2e2e2e; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; }
+    .footer a { color:#3a3a3a; text-decoration:none; }
+    .footer a:hover { color:var(--red); }
 
-    /* ── Footer ── */
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #555;
-      font-size: 0.75rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    footer a { color: var(--red); text-decoration: none; }
-
-    /* ── Spinner ── */
-    .spinner {
-      display: inline-block;
-      width: 18px; height: 18px;
-      border: 2px solid #444;
-      border-top-color: var(--red);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Error ── */
-    .error-card {
-      background: rgba(227,19,27,0.12);
-      border: 1px solid rgba(227,19,27,0.3);
-      border-radius: 10px;
-      padding: 14px 18px;
-      font-size: 0.85rem;
-      color: #ff8a8a;
-      margin-bottom: 18px;
-    }
-
-    /* ── Proxy note ── */
-    .proxy-note {
-      background: rgba(245,166,35,0.1);
-      border: 1px solid rgba(245,166,35,0.3);
-      border-radius: 10px;
-      padding: 14px 18px;
-      font-size: 0.82rem;
-      color: #f5c842;
-      margin-bottom: 18px;
-      line-height: 1.6;
-    }
-    .proxy-note strong { display: block; margin-bottom: 4px; font-size: 0.88rem; }
-    .proxy-note code {
-      background: rgba(0,0,0,0.3);
-      padding: 1px 6px; border-radius: 4px;
-      font-size: 0.8rem; color: #ffd27d;
-    }
-
-    @media (max-width: 600px) {
-      .header-content { padding: 14px 16px; }
-      .header-text h1 { font-size: 1.6rem; }
-      .config-card { flex-direction: column; align-items: stretch; }
-      .config-card input { width: 100%; }
-      .train-number-badge { font-size: 1.2rem; min-width: 50px; }
+    @media(max-width:640px){
+      .page{padding:12px 12px 28px;}
+      .board-col-heads{display:none;}
+      .trow{grid-template-columns:58px 1fr 40px 70px;}
+      .t-type,.t-time{display:none;}
+      .t-countdown{grid-column:4;}
     }
   </style>
 </head>
@@ -426,325 +144,294 @@
 
 <header>
   <div class="header-stripe"></div>
-  <div class="header-content">
-    <div class="logo-circle">
-      <!-- Caltrain-style bullet train icon -->
-      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <div class="header-inner">
+    <div class="logo">
+      <svg viewBox="0 0 36 36" fill="none">
         <rect x="2" y="11" width="28" height="14" rx="4" fill="#E3131B"/>
         <rect x="30" y="14" width="4" height="8" rx="2" fill="#E3131B"/>
-        <circle cx="8" cy="27" r="3" fill="#1A1A1A" stroke="#555" stroke-width="1.5"/>
-        <circle cx="22" cy="27" r="3" fill="#1A1A1A" stroke="#555" stroke-width="1.5"/>
-        <rect x="6" y="14" width="5" height="5" rx="1" fill="white" opacity="0.8"/>
-        <rect x="14" y="14" width="5" height="5" rx="1" fill="white" opacity="0.8"/>
-        <rect x="22" y="14" width="5" height="5" rx="1" fill="white" opacity="0.8"/>
+        <circle cx="8" cy="27" r="3" fill="#1A1A1A" stroke="#666" stroke-width="1.5"/>
+        <circle cx="22" cy="27" r="3" fill="#1A1A1A" stroke="#666" stroke-width="1.5"/>
+        <rect x="6" y="14" width="5" height="5" rx="1" fill="white" opacity="0.85"/>
+        <rect x="14" y="14" width="5" height="5" rx="1" fill="white" opacity="0.85"/>
+        <rect x="22" y="14" width="5" height="5" rx="1" fill="white" opacity="0.85"/>
       </svg>
     </div>
-    <div class="header-text">
-      <h1>Caltrain Tracker</h1>
-      <p>Real-time trains near your location</p>
+    <div class="header-title">
+      <h1>Caltrain</h1>
+      <p>Live departure tracker</p>
     </div>
-    <div class="live-badge">
-      <div class="pulse-dot" id="liveDot"></div>
-      <span id="liveLabel">Ready</span>
+    <div class="header-clock">
+      <div class="clock-time" id="clockTime">--:--</div>
+      <div class="clock-status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusLabel">Ready</span>
+      </div>
     </div>
   </div>
 </header>
 
-<div class="container">
+<div class="page">
 
-  <!-- API Token Config -->
-  <div class="config-card">
-    <div style="flex:1; min-width:200px;">
-      <label>511 SF Bay API Token</label>
-      <input type="password" id="apiToken" placeholder="Paste your 511 API token here…" />
+  <div class="controls">
+    <div class="ctrl-group">
+      <div class="ctrl-label">Your location</div>
+      <div class="ctrl-value" id="locValue">Not detected</div>
     </div>
-    <div>
-      <label>Proxy URL (optional)</label>
-      <input type="text" id="proxyUrl" placeholder="http://localhost:3001/proxy" style="width:240px;" />
+    <div class="ctrl-group">
+      <div class="ctrl-label">Nearest stop</div>
+      <div class="ctrl-value" id="stopValue">—</div>
     </div>
-    <button class="btn btn-secondary" onclick="saveToken()">💾 Save</button>
-  </div>
-
-  <div class="proxy-note" id="proxyNote">
-    <strong>⚠️ CORS Note — Running on Replit?</strong>
-    The 511 API blocks direct browser requests. You need a tiny proxy. Add this to your Replit <code>server.js</code>:<br><br>
-    <code>app.get('/proxy', async (req,res) => { const url = req.query.url; const r = await fetch(url); const data = await r.json(); res.json(data); });</code><br><br>
-    Then set Proxy URL to your Replit URL + <code>/proxy</code>. Or use the <strong>demo mode</strong> below to explore the UI with sample data.
-  </div>
-
-  <!-- Location -->
-  <div class="location-card">
-    <div class="location-icon">📍</div>
-    <div class="location-info">
-      <h3>Your Location</h3>
-      <p id="locationText">Not yet detected — <span>click Locate Me</span></p>
-    </div>
-    <button class="btn btn-secondary" onclick="getLocation()">📡 Locate Me</button>
+    <button class="btn btn-ghost" onclick="getLocation()">📡 Locate Me</button>
     <button class="btn btn-primary" onclick="fetchTrains()">🚆 Find Trains</button>
-    <button class="btn btn-secondary" onclick="loadDemo()">🎭 Demo</button>
+    <button class="btn btn-ghost" onclick="loadDemo()">Demo</button>
   </div>
 
-  <!-- Error -->
-  <div class="error-card" id="errorCard" style="display:none;"></div>
+  <div class="error-bar" id="errorBar" style="display:none;"></div>
 
-  <!-- Map visual -->
-  <div class="map-area" id="mapArea" style="display:none;">
-    <div class="map-track"></div>
-    <div class="map-you">
-      <div class="map-you-dot"></div>
-      <div class="map-you-label">You</div>
-    </div>
-    <div class="map-train-icon" id="mapTrain1" style="left:70%;">🚆</div>
-    <div class="map-train-icon" id="mapTrain2" style="left:20%;">🚆</div>
+  <div class="stop-line-wrap" id="stopLineWrap" style="display:none;">
+    <div class="stop-line-label">Caltrain corridor · your nearest stop highlighted · ↑ NB = toward SF &nbsp;|&nbsp; ↓ SB = toward San Jose</div>
+    <div class="stop-track" id="stopTrack"></div>
   </div>
 
-  <!-- Legend -->
   <div class="legend" id="legend" style="display:none;">
-    <div class="legend-item"><div class="legend-dot" style="background:var(--baby-bullet)"></div>Baby Bullet</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--express)"></div>Express</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--limited)"></div>Limited</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--local)"></div>Local</div>
+    <div class="legend-item"><div class="legend-bar" style="background:var(--baby-bullet)"></div>Baby Bullet</div>
+    <div class="legend-item"><div class="legend-bar" style="background:var(--express)"></div>Express</div>
+    <div class="legend-item"><div class="legend-bar" style="background:var(--limited)"></div>Limited</div>
+    <div class="legend-item"><div class="legend-bar" style="background:var(--local)"></div>Local</div>
+    <div class="legend-item"><div style="width:16px;height:10px;border-radius:3px;background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);"></div>Northbound</div>
+    <div class="legend-item"><div style="width:16px;height:10px;border-radius:3px;background:rgba(74,144,217,0.15);border:1px solid rgba(74,144,217,0.3);"></div>Southbound</div>
   </div>
 
-  <!-- Trains list -->
-  <div id="trainsContainer">
-    <div class="status-msg" id="statusMsg">Enter your API token and click <strong>Locate Me</strong> to get started.</div>
+  <div id="boardWrap">
+    <div class="empty-state">
+      <div class="e-icon">🚉</div>
+      <h3>Waiting for location</h3>
+      <p>Click <strong>Locate Me</strong> then <strong>Find Trains</strong><br>to see live departures at your nearest stop.</p>
+    </div>
   </div>
 
-  <footer>
-    Data provided by <a href="https://511.org/open-data" target="_blank">511 SF Bay Open Data</a> · 
-    Caltrain real-time feed · 
-    Refresh every 30s
-  </footer>
-
+  <div class="footer">
+    <a href="https://511.org/open-data" target="_blank">511 SF Bay</a> · Caltrain real-time feed ·
+    <span id="lastUpdate"></span>
+  </div>
 </div>
 
 <script>
-  let userLat = null, userLng = null;
-  let apiToken = localStorage.getItem('ct_token') || '';
-  let proxyUrl = localStorage.getItem('ct_proxy') || '';
-  let refreshTimer = null;
+  let userLat=null, userLng=null, nearestStopObj=null, refreshTimer=null;
 
-  // Pre-fill saved values
-  document.getElementById('apiToken').value = apiToken;
-  document.getElementById('proxyUrl').value = proxyUrl;
-
-  function saveToken() {
-    apiToken = document.getElementById('apiToken').value.trim();
-    proxyUrl = document.getElementById('proxyUrl').value.trim();
-    localStorage.setItem('ct_token', apiToken);
-    localStorage.setItem('ct_proxy', proxyUrl);
-    showStatus('✅ Token saved!');
-    if (proxyUrl) document.getElementById('proxyNote').style.display = 'none';
+  // ── Clock
+  function tick() {
+    document.getElementById('clockTime').textContent =
+      new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
   }
+  tick(); setInterval(tick,1000);
 
-  function showError(msg) {
-    const el = document.getElementById('errorCard');
-    el.textContent = msg;
-    el.style.display = 'block';
+  function setStatus(state,label) {
+    document.getElementById('statusDot').className='status-dot '+state;
+    document.getElementById('statusLabel').textContent=label;
   }
-  function clearError() { document.getElementById('errorCard').style.display = 'none'; }
-  function showStatus(msg) {
-    document.getElementById('trainsContainer').innerHTML = `<div class="status-msg">${msg}</div>`;
-  }
+  function showError(msg){ const b=document.getElementById('errorBar'); b.textContent='⚠ '+msg; b.style.display='block'; }
+  function clearError(){ document.getElementById('errorBar').style.display='none'; }
 
-  async function getLocation() {
-    showStatus('<div class="spinner"></div> Detecting location…');
-    clearError();
-    if (!navigator.geolocation) return showError('Geolocation not supported by your browser.');
-    navigator.geolocation.getCurrentPosition(pos => {
-      userLat = pos.coords.latitude;
-      userLng = pos.coords.longitude;
-      document.getElementById('locationText').innerHTML =
-        `Lat <span>${userLat.toFixed(5)}</span> · Lng <span>${userLng.toFixed(5)}</span>`;
-      showStatus('📍 Location found. Click <strong>Find Trains</strong>.');
-    }, err => {
-      showError('Could not get location: ' + err.message);
-    }, { enableHighAccuracy: true });
-  }
-
-  // ── Caltrain route shape (simplified lat/lng for distance calc)
-  // Caltrain runs roughly SF (37.776) → San Jose (37.329), lng ~-122.39 → -121.90
-  const CALTRAIN_STOPS = [
-    { name: 'San Francisco', lat: 37.7762, lng: -122.3947, seq: 1 },
-    { name: '22nd Street', lat: 37.7575, lng: -122.3920, seq: 2 },
-    { name: 'Bayshore', lat: 37.7090, lng: -122.4013, seq: 3 },
-    { name: 'South San Francisco', lat: 37.6567, lng: -122.4056, seq: 4 },
-    { name: 'San Bruno', lat: 37.6308, lng: -122.4110, seq: 5 },
-    { name: 'Millbrae', lat: 37.5994, lng: -122.3868, seq: 6 },
-    { name: 'Broadway', lat: 37.5873, lng: -122.3736, seq: 7 },
-    { name: 'Burlingame', lat: 37.5796, lng: -122.3462, seq: 8 },
-    { name: 'San Mateo', lat: 37.5672, lng: -122.3236, seq: 9 },
-    { name: 'Hayward Park', lat: 37.5528, lng: -122.3082, seq: 10 },
-    { name: 'Hillsdale', lat: 37.5375, lng: -122.2952, seq: 11 },
-    { name: 'Belmont', lat: 37.5199, lng: -122.2756, seq: 12 },
-    { name: 'San Carlos', lat: 37.5075, lng: -122.2600, seq: 13 },
-    { name: 'Redwood City', lat: 37.4853, lng: -122.2322, seq: 14 },
-    { name: 'Atherton', lat: 37.4634, lng: -122.1975, seq: 15 },
-    { name: 'Menlo Park', lat: 37.4540, lng: -122.1821, seq: 16 },
-    { name: 'Palo Alto', lat: 37.4434, lng: -122.1650, seq: 17 },
-    { name: 'California Ave', lat: 37.4291, lng: -122.1435, seq: 18 },
-    { name: 'San Antonio', lat: 37.4071, lng: -122.1082, seq: 19 },
-    { name: 'Mountain View', lat: 37.3939, lng: -122.0765, seq: 20 },
-    { name: 'Sunnyvale', lat: 37.3781, lng: -122.0302, seq: 21 },
-    { name: 'Lawrence', lat: 37.3704, lng: -121.9972, seq: 22 },
-    { name: 'Santa Clara', lat: 37.3529, lng: -121.9360, seq: 23 },
-    { name: 'College Park', lat: 37.3428, lng: -121.9190, seq: 24 },
-    { name: 'San Jose Diridon', lat: 37.3298, lng: -121.9024, seq: 25 },
-    { name: 'Tamien', lat: 37.3116, lng: -121.8804, seq: 26 },
-    { name: 'Capitol', lat: 37.2962, lng: -121.8564, seq: 27 },
-    { name: 'Blossom Hill', lat: 37.2799, lng: -121.8374, seq: 28 },
-    { name: 'Morgan Hill', lat: 37.1305, lng: -121.6538, seq: 29 },
-    { name: 'San Martin', lat: 37.0856, lng: -121.6093, seq: 30 },
-    { name: 'Gilroy', lat: 37.0058, lng: -121.5668, seq: 31 }
+  // ── Stop data with CORRECT numeric 511 stop IDs
+  // Each stop has nbId (northbound = toward SF) and sbId (southbound = toward SJ/Gilroy)
+  const STOPS = [
+    { name:'San Francisco',       lat:37.7762, lng:-122.3947, nbId:'70011', sbId:'70012' },
+    { name:'22nd Street',         lat:37.7575, lng:-122.3920, nbId:'70021', sbId:'70022' },
+    { name:'Bayshore',            lat:37.7090, lng:-122.4013, nbId:'70031', sbId:'70032' },
+    { name:'South San Francisco', lat:37.6567, lng:-122.4056, nbId:'70041', sbId:'70042' },
+    { name:'San Bruno',           lat:37.6308, lng:-122.4110, nbId:'70051', sbId:'70052' },
+    { name:'Millbrae',            lat:37.5994, lng:-122.3868, nbId:'70061', sbId:'70062' },
+    { name:'Burlingame',          lat:37.5796, lng:-122.3462, nbId:'70081', sbId:'70082' },
+    { name:'San Mateo',           lat:37.5672, lng:-122.3236, nbId:'70091', sbId:'70092' },
+    { name:'Hayward Park',        lat:37.5528, lng:-122.3082, nbId:'70101', sbId:'70102' },
+    { name:'Hillsdale',           lat:37.5375, lng:-122.2952, nbId:'70111', sbId:'70112' },
+    { name:'Belmont',             lat:37.5199, lng:-122.2756, nbId:'70121', sbId:'70122' },
+    { name:'San Carlos',          lat:37.5075, lng:-122.2600, nbId:'70131', sbId:'70132' },
+    { name:'Redwood City',        lat:37.4853, lng:-122.2322, nbId:'70141', sbId:'70142' },
+    { name:'Menlo Park',          lat:37.4540, lng:-122.1821, nbId:'70161', sbId:'70162' },
+    { name:'Palo Alto',           lat:37.4434, lng:-122.1650, nbId:'70171', sbId:'70172' },
+    { name:'California Ave',      lat:37.4291, lng:-122.1435, nbId:'70191', sbId:'70192' },
+    { name:'San Antonio',         lat:37.4071, lng:-122.1082, nbId:'70201', sbId:'70202' },
+    { name:'Mountain View',       lat:37.3939, lng:-122.0765, nbId:'70211', sbId:'70212' },
+    { name:'Sunnyvale',           lat:37.3781, lng:-122.0302, nbId:'70221', sbId:'70222' },
+    { name:'Lawrence',            lat:37.3704, lng:-121.9972, nbId:'70231', sbId:'70232' },
+    { name:'Santa Clara',         lat:37.3529, lng:-121.9360, nbId:'70241', sbId:'70242' },
+    { name:'San Jose Diridon',    lat:37.3298, lng:-121.9024, nbId:'70261', sbId:'70262' },
+    { name:'Tamien',              lat:37.3116, lng:-121.8804, nbId:'70271', sbId:'70272' },
+    { name:'Capitol',             lat:37.2962, lng:-121.8564, nbId:'70281', sbId:'70282' },
+    { name:'Blossom Hill',        lat:37.2799, lng:-121.8374, nbId:'70291', sbId:'70292' },
+    { name:'Morgan Hill',         lat:37.1305, lng:-121.6538, nbId:'70301', sbId:'70302' },
+    { name:'San Martin',          lat:37.0856, lng:-121.6093, nbId:'70311', sbId:'70312' },
+    { name:'Gilroy',              lat:37.0058, lng:-121.5668, nbId:'70321', sbId:'70322' },
   ];
 
-  function haversine(lat1, lng1, lat2, lng2) {
-    const R = 3958.8; // miles
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  function haversine(lat1,lng1,lat2,lng2){
+    const R=3958.8,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+    const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  }
+  function findNearest(lat,lng){
+    let best=null,bestDist=Infinity,bestIdx=0;
+    STOPS.forEach((s,i)=>{const d=haversine(lat,lng,s.lat,s.lng);if(d<bestDist){bestDist=d;best=s;bestIdx=i;}});
+    return {stop:best,dist:bestDist,idx:bestIdx};
   }
 
-  function nearestStop(lat, lng) {
-    let best = null, bestDist = Infinity;
-    CALTRAIN_STOPS.forEach(s => {
-      const d = haversine(lat, lng, s.lat, s.lng);
-      if (d < bestDist) { bestDist = d; best = s; }
-    });
-    return { stop: best, dist: bestDist };
-  }
-
-  function classifyTrain(tripId, headsign) {
-    const id = (tripId || '').toLowerCase();
-    const hs = (headsign || '').toLowerCase();
-    if (id.includes('bb') || hs.includes('baby bullet') || id.includes('bullet')) return 'baby-bullet';
-    if (id.includes('ex') || hs.includes('express')) return 'express';
-    if (id.includes('li') || hs.includes('limited')) return 'limited';
+  function classifyTrain(id,hs){
+    id=(id||'').toLowerCase(); hs=(hs||'').toLowerCase();
+    if(id.includes('bb')||hs.includes('baby bullet')||id.includes('bullet')) return 'baby-bullet';
+    if(id.includes('ex')||hs.includes('express')) return 'express';
+    if(id.includes('li')||hs.includes('limited')) return 'limited';
     return 'local';
   }
+  const typeLabel=c=>({'baby-bullet':'Baby Bullet','express':'Express','limited':'Limited','local':'Local'}[c]);
 
-  function trainTypeLabel(cls) {
-    return { 'baby-bullet': 'Baby Bullet', 'express': 'Express', 'limited': 'Limited', 'local': 'Local' }[cls];
-  }
-
-  // ── Fetch real data via 511 StopMonitoring
-  async function fetchFrom511(stopCode) {
-    if (!apiToken) throw new Error('No API token set');
-    let url = `https://api.511.org/transit/StopMonitoring?api_key=${apiToken}&agency=CT&stopCode=${stopCode}&format=json`;
-    if (proxyUrl) {
-      url = `${proxyUrl}?url=${encodeURIComponent(url)}`;
-    }
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`API returned ${res.status}`);
-    return res.json();
-  }
-
-  async function fetchTrains() {
+  // ── Locate
+  function getLocation(){
     clearError();
-    if (!userLat) return showError('Please click Locate Me first.');
-    if (!apiToken) return showError('Please enter your 511 API token and click Save.');
+    if(!navigator.geolocation) return showError('Geolocation not supported.');
+    setStatus('loading','Locating…');
+    navigator.geolocation.getCurrentPosition(pos=>{
+      userLat=pos.coords.latitude; userLng=pos.coords.longitude;
+      const {stop,dist,idx}=findNearest(userLat,userLng);
+      nearestStopObj={stop,dist,idx};
+      document.getElementById('locValue').textContent=`${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
+      document.getElementById('stopValue').textContent=`${stop.name} · ${dist.toFixed(1)} mi`;
+      setStatus('ready','Located');
+      renderStopLine(idx);
+    },err=>{showError('Location: '+err.message); setStatus('error','Error');},{enableHighAccuracy:true});
+  }
 
-    const liveLabel = document.getElementById('liveLabel');
-    const liveDot = document.getElementById('liveDot');
-    liveLabel.textContent = 'Loading';
-    liveDot.style.background = '#f5a623';
+  // ── Stop line
+  function renderStopLine(youIdx){
+    const start=Math.max(0,youIdx-5), end=Math.min(STOPS.length-1,youIdx+5);
+    let html='';
+    if(start>0) html+=`<div class="ellipsis">SF ···</div>`;
+    for(let i=start;i<=end;i++){
+      const isYou=i===youIdx;
+      const name=STOPS[i].name.replace(' ','<br>');
+      html+=`<div class="snode${isYou?' is-you':''}"><div class="snode-dot"></div><div class="snode-name">${name}</div></div>`;
+      if(i<end) html+=`<div class="sseg"></div>`;
+    }
+    if(end<STOPS.length-1) html+=`<div class="ellipsis">··· GIL</div>`;
+    document.getElementById('stopTrack').innerHTML=html;
+    document.getElementById('stopLineWrap').style.display='block';
+  }
 
-    showStatus('<div class="spinner"></div> Fetching trains…');
+  // ── Fetch — passes numeric IDs to server
+  async function fetchTrains(){
+    clearError();
+    if(!userLat) return showError('Please click Locate Me first.');
+    setStatus('loading','Fetching…');
+    document.getElementById('boardWrap').innerHTML=
+      `<div class="loading-row"><div class="spinner"></div>Fetching live departures…</div>`;
 
     try {
-      const { stop, dist } = nearestStop(userLat, userLng);
-      const data = await fetchFrom511(stop.name.replace(/ /g, '%20'));
-      renderFromSiriData(data, stop, dist);
-      liveLabel.textContent = 'Live';
-      liveDot.style.background = '#4ade80';
-      // Auto-refresh every 30s
+      const {stop,dist,idx}=nearestStopObj||findNearest(userLat,userLng);
+      nearestStopObj={stop,dist,idx};
+      renderStopLine(idx);
+
+      const res=await fetch(`/api/trains?nbId=${stop.nbId}&sbId=${stop.sbId}`);
+      if(!res.ok) throw new Error(`Server error ${res.status}`);
+      const data=await res.json();
+      processAndRender(data.visits||[], stop);
+
+      setStatus('live','Live');
+      document.getElementById('lastUpdate').textContent=
+        'Updated '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
       clearTimeout(refreshTimer);
-      refreshTimer = setTimeout(fetchTrains, 30000);
-    } catch (e) {
-      showError('API error: ' + e.message + '. Try Demo mode or check your proxy setup.');
-      liveLabel.textContent = 'Error';
-      liveDot.style.background = '#e3131b';
+      refreshTimer=setTimeout(fetchTrains,30000);
+    } catch(e){
+      showError(e.message);
+      setStatus('error','Error');
+      document.getElementById('boardWrap').innerHTML=
+        `<div class="empty-state"><div class="e-icon">⚠️</div><h3>Could not load</h3><p>${e.message}</p></div>`;
     }
   }
 
-  function renderFromSiriData(data, nearestStop, dist) {
-    const visits = data?.ServiceDelivery?.StopMonitoringDelivery?.MonitoredStopVisit || [];
-    const now = Date.now();
-    const trains = visits.map(v => {
-      const j = v.MonitoredVehicleJourney;
-      const arrival = j?.MonitoredCall?.ExpectedArrivalTime || j?.MonitoredCall?.AimedArrivalTime;
-      const ms = arrival ? new Date(arrival).getTime() - now : null;
-      const mins = ms !== null ? Math.round(ms / 60000) : null;
+  function processAndRender(visits, stop){
+    const now=Date.now();
+    const trains=visits.map(v=>{
+      const j=v.MonitoredVehicleJourney;
+      const arrival=j?.MonitoredCall?.ExpectedArrivalTime||j?.MonitoredCall?.AimedArrivalTime;
+      const ms=arrival?new Date(arrival).getTime()-now:null;
+      const mins=ms!==null?Math.round(ms/60000):null;
       return {
-        trainNumber: j?.FramedVehicleJourneyRef?.DatedVehicleJourneyRef || j?.VehicleRef || '?',
-        headsign: j?.DestinationName || j?.DirectionRef || '',
-        origin: j?.OriginName || '',
-        minsAway: mins,
-        cls: classifyTrain(j?.FramedVehicleJourneyRef?.DatedVehicleJourneyRef, j?.DestinationName),
-        occupancy: j?.Occupancy
+        number: j?.FramedVehicleJourneyRef?.DatedVehicleJourneyRef||j?.VehicleRef||'?',
+        dest:   j?.DestinationName||j?.DirectionRef||'Unknown',
+        origin: j?.OriginName||'',
+        time:   arrival?new Date(arrival).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}):'—',
+        mins,
+        cls:    classifyTrain(j?.FramedVehicleJourneyRef?.DatedVehicleJourneyRef,j?.DestinationName),
+        dir:    v._direction||'NB',
       };
-    }).filter(t => t.minsAway === null || t.minsAway > -2)
-      .sort((a, b) => (a.minsAway ?? 999) - (b.minsAway ?? 999))
-      .slice(0, 8);
+    })
+    .filter(t=>t.mins===null||t.mins>-2)
+    .sort((a,b)=>(a.mins??999)-(b.mins??999))
+    .slice(0,12);
 
-    renderTrains(trains, nearestStop, dist);
+    renderBoard(trains,stop);
   }
 
-  // ── Demo data
-  function loadDemo() {
-    clearError();
-    document.getElementById('proxyNote').style.display = 'none';
-    const { stop, dist } = userLat ? nearestStop(userLat, userLng) : { stop: CALTRAIN_STOPS[16], dist: 0.3 }; // Palo Alto default
-    const demoTrains = [
-      { trainNumber: '101', headsign: 'San Jose Diridon', origin: 'San Francisco', minsAway: 2, cls: 'baby-bullet' },
-      { trainNumber: '217', headsign: 'San Francisco', origin: 'Gilroy', minsAway: 6, cls: 'limited' },
-      { trainNumber: '323', headsign: 'San Jose Diridon', origin: 'San Francisco', minsAway: 14, cls: 'local' },
-      { trainNumber: '155', headsign: 'San Francisco', origin: 'San Jose Diridon', minsAway: 18, cls: 'express' },
-      { trainNumber: '431', headsign: 'Gilroy', origin: 'San Francisco', minsAway: 27, cls: 'local' },
-      { trainNumber: '103', headsign: 'San Jose Diridon', origin: 'San Francisco', minsAway: 35, cls: 'baby-bullet' },
-    ];
-    renderTrains(demoTrains, stop, dist);
-    document.getElementById('liveLabel').textContent = 'Demo';
-    document.getElementById('liveDot').style.background = '#a855f7';
-  }
-
-  function renderTrains(trains, nearestStop, dist) {
-    document.getElementById('mapArea').style.display = 'flex';
-    document.getElementById('legend').style.display = 'flex';
-
-    let html = `<div class="section-header">Trains near ${nearestStop.name} (${dist.toFixed(1)} mi away)</div>`;
-
-    if (!trains.length) {
-      html += `<div class="status-msg">No upcoming trains found at this stop.</div>`;
-    } else {
-      html += `<div class="train-list">`;
-      trains.forEach(t => {
-        const minsText = t.minsAway === null ? '–' : t.minsAway <= 0 ? 'NOW' : `${t.minsAway}m`;
-        const minsClass = t.minsAway <= 0 ? 'now' : t.minsAway <= 5 ? 'soon' : '';
-        html += `
-          <div class="train-card ${t.cls}">
-            <div class="train-number-badge">#${t.trainNumber}</div>
-            <div class="train-details">
-              <div class="train-type-row">
-                <div class="type-pill">${trainTypeLabel(t.cls)}</div>
-              </div>
-              <div class="train-route">→ ${t.headsign || 'Unknown'}</div>
-              <div class="train-meta">${t.origin ? `from ${t.origin}` : ''}</div>
-            </div>
-            <div class="train-timing">
-              <div class="arriving-in ${minsClass}">${minsText}</div>
-              <div class="arriving-label">${t.minsAway <= 0 ? 'Arriving' : 'minutes'}</div>
-            </div>
-          </div>`;
-      });
-      html += `</div>`;
+  function renderBoard(trains,stop){
+    document.getElementById('legend').style.display='flex';
+    const wrap=document.getElementById('boardWrap');
+    if(!trains.length){
+      wrap.innerHTML=`<div class="empty-state"><div class="e-icon">🕐</div><h3>No trains right now</h3>
+        <p>No scheduled departures at <strong>${stop.name}</strong> at this time.<br>
+        Caltrain runs approx <strong>5am–midnight</strong>.</p></div>`;
+      return;
     }
+    let html=`
+      <div class="board-section-title">Upcoming departures · ${stop.name}</div>
+      <div class="board-col-heads">
+        <span>Train</span><span>Destination</span><span>Dir</span><span>Type</span><span>Departs</span><span style="text-align:right">In</span>
+      </div>
+      <div class="board">`;
 
-    const lastUpdate = new Date().toLocaleTimeString();
-    html += `<div class="status-msg" style="font-size:0.75rem; opacity:0.5;">Last updated ${lastUpdate}</div>`;
-    document.getElementById('trainsContainer').innerHTML = html;
+    trains.forEach(t=>{
+      const isNow=t.mins!==null&&t.mins<=0;
+      const isImminent=t.mins!==null&&t.mins>0&&t.mins<=5;
+      const rowExtra=isNow?'arriving-now':isImminent?'imminent':'';
+      const numTxt=t.mins===null?'–':isNow?'NOW':`${t.mins}`;
+      const unitTxt=t.mins===null||isNow?'':'min';
+      const cntCls=isNow?'now':isImminent?'soon':'';
+      const dirCls=t.dir==='NB'?'dir-nb':'dir-sb';
+      const dirLabel=t.dir==='NB'?'↑ NB':'↓ SB';
+
+      html+=`<div class="trow ${t.cls} ${rowExtra}">
+        <div class="t-num">#${t.number}</div>
+        <div>
+          <div class="t-dest-main">→ ${t.dest}</div>
+          ${t.origin?`<div class="t-dest-sub">from ${t.origin}</div>`:''}
+        </div>
+        <div><span class="dir-badge ${dirCls}">${dirLabel}</span></div>
+        <div class="t-type"><div class="type-pill">${typeLabel(t.cls)}</div></div>
+        <div class="t-time">${t.time}</div>
+        <div class="t-countdown">
+          <div class="countdown-num ${cntCls}">${numTxt}</div>
+          <div class="countdown-unit">${unitTxt}</div>
+        </div>
+      </div>`;
+    });
+    wrap.innerHTML=html+'</div>';
+  }
+
+  // ── Demo
+  function loadDemo(){
+    clearError();
+    const stop=nearestStopObj?.stop||STOPS[16];
+    renderStopLine(nearestStopObj?.idx??16);
+    renderBoard([
+      {number:'101',dest:'San Jose Diridon',origin:'San Francisco', time:'9:14 AM',mins:2, cls:'baby-bullet',dir:'SB'},
+      {number:'217',dest:'San Francisco',   origin:'Gilroy',        time:'9:19 AM',mins:7, cls:'limited',    dir:'NB'},
+      {number:'323',dest:'San Jose Diridon',origin:'San Francisco', time:'9:28 AM',mins:16,cls:'local',      dir:'SB'},
+      {number:'155',dest:'San Francisco',   origin:'San Jose',      time:'9:41 AM',mins:29,cls:'express',    dir:'NB'},
+      {number:'431',dest:'Gilroy',          origin:'San Francisco', time:'9:55 AM',mins:43,cls:'local',      dir:'SB'},
+      {number:'103',dest:'San Jose Diridon',origin:'San Francisco', time:'10:14 AM',mins:62,cls:'baby-bullet',dir:'SB'},
+    ],stop);
+    setStatus('ready','Demo');
+    document.getElementById('legend').style.display='flex';
   }
 </script>
 </body>
